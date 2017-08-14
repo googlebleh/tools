@@ -3,14 +3,12 @@
 set -e
 
 myw_id=$(xdotool getwindowfocus) # assume script is run from a shell
-curr_fname=77
+curr_fname=106
 end_title="Apply Customizations to Certain Types of Files"
 
 
-# while (( $curr_fname < 3 )) ; do
 while : ; do
     echo "Requesting print version of page $curr_fname"
-    # mainw_geo="Geometry: 1920x1055"
     mainw_name="Practical Vim, 2nd Edition"
     mainw_but_x=284
     mainw_but_y=$((253-26))
@@ -28,7 +26,6 @@ while : ; do
 
 
     echo -n "  saving $curr_fname.pdf "
-    # printw_geo="Geometry: 1920x1027"
     printw_name="proquest.safaribooksonline.com.proxy.library.cmu.edu/print"
     printw_but_x=290
     printw_but_y=$((170-26))
