@@ -44,16 +44,11 @@ make install
 #make distclean
 
 # VP8/VP9 video encoder and decoder
-cd "$FF_SOURCES"
-rm -r libvpx-1.5.0
-wget http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.5.0.tar.bz2
-tar xjf libvpx-1.5.0.tar.bz2
-rm libvpx-1.5.0.tar.bz2
-cd libvpx-1.5.0
-PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --disable-examples --disable-unit-tests
+cd "$FF_SOURCES/libvpx"
+git pull
+PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
 PATH="$HOME/bin:$PATH" make -j4
 make install
-# make clean
 
 # FFmpeg
 cd "$FF_SOURCES/FFmpeg"
