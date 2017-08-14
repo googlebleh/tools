@@ -3,7 +3,7 @@
 set -e
 
 myw_id=$(xdotool getwindowfocus) # assume script is run from a shell
-curr_fname=106
+curr_fname=184
 end_title="Apply Customizations to Certain Types of Files"
 
 
@@ -16,8 +16,6 @@ while : ; do
     if (( $(echo $mainw_id | wc -w) != 1 )); then
         echo "Couldn't zoom in on Proquest window"
         exit 1
-    elif xdotool getwindowname "$mainw_id" | grep --quiet "$end_title"; then
-        break  # done!
     fi
     xdotool windowraise "$mainw_id"
     sleep 0.5
@@ -73,6 +71,10 @@ while : ; do
     echo "  cleaning up print dialog"
     xdotool key --window "$printw_id" "alt+F4"
     sleep 0.5
+
+    if xdotool getwindowname "$mainw_id" | grep --quiet "$end_title"; then
+        break  # done!
+    fi
 
     echo "Proceeding to next page"
     xdotool key --window "$mainw_id" n
