@@ -27,8 +27,7 @@ while : ; do
     xdotool click 1
 
 
-    # echo -n "  saving $curr_fname.pdf "
-    echo "  saving $curr_fname.pdf "
+    echo -n "  saving $curr_fname.pdf "
     # printw_geo="Geometry: 1920x1027"
     printw_name="proquest.safaribooksonline.com.proxy.library.cmu.edu/print"
     printw_but_x=290
@@ -45,13 +44,11 @@ while : ; do
         fi
     done
     sleep 0.5
-    echo "    raise and focus"
     xdotool windowraise "$printw_id"
     xdotool windowfocus "$printw_id"
     # xdotool mousemove --window "$printw_id" --sync "$printw_but_x" "$printw_but_y"
     sleep 3  # print dialog can be a little slow
     # xdotool click 1
-    echo "    confirm print options"
     xdotool key --window "$printw_id" "Return"
 
     echo "in default location"
