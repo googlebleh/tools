@@ -30,30 +30,25 @@ cd "$FF_SOURCES/x265"
 hg pull -u  # maybe we need not be in the repo's root to pull everything
 cd "$FF_SOURCES/x265/build/linux"
 PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$FF_BUILD" -DENABLE_SHARED:bool=off ../../source
-make
+make -j4
 make install
 #make distclean || echo "Skipping distclean for x265..."
 
 # AAC audio encoder
-# cd "$FF_SOURCES/fdk-aac"
-# git pull
-# autoreconf -fiv
-# ./configure --prefix="$FF_BUILD" --disable-shared
-# make
-# make install
+cd "$FF_SOURCES/fdk-aac"
+git pull
+autoreconf -fiv
+./configure --prefix="$FF_BUILD" --disable-shared
+make -j4
+make install
 #make distclean
 
 # VP8/VP9 video encoder and decoder
-cd "$FF_SOURCES"
-# rm -r libvpx-1.5.0
-# wget http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.5.0.tar.bz2
-# tar xjf libvpx-1.5.0.tar.bz2
-# rm libvpx-1.5.0.tar.bz2
-cd libvpx-1.5.0
-PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --disable-examples --disable-unit-tests
-PATH="$HOME/bin:$PATH" make
+cd "$FF_SOURCES/libvpx"
+git pull
+PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
+PATH="$HOME/bin:$PATH" make -j4
 make install
-# make clean
 
 # FFmpeg
 cd "$FF_SOURCES/FFmpeg"
@@ -77,7 +72,7 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$FF_BUILD/lib/pkgconfig" ./configure \
   --enable-libx265 \
   --enable-nonfree \
   --enable-static
-PATH="$HOME/bin:$PATH" make
+PATH="$HOME/bin:$PATH" make -j4
 make install
 #make distclean
 hash -r
