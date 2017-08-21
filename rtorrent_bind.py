@@ -9,6 +9,8 @@ import socket
 import fcntl
 import struct
 
+from argparse import ArgumentParser
+
 
 def get_ip_address(ifname):
     """Updated from http://stackoverflow.com/a/24196955 for Python 3"""
@@ -31,16 +33,28 @@ def wait_ip_address(ifname):
     return None
 
 
+def process_args():
+    ap = ArgumentParser()
+    ap.add_argument("-d", "--delay", help="string to pass to sleep")
+    return ap.parse_args()
+
+
 def main():
     vpn_iface_name = "tun0"
     vpnroot = os.path.expanduser("~/Scripts/openvpn")
     vpn_already_on = False
+
+    args = process_args()
 
     try:
         vpn_ip = get_ip_address(vpn_iface_name)
         vpn_already_on = True
 
     except:
+        if args.delay:
+            print("about", args.delay, "left")
+            subprocess.run(["sleep", args.delay])
+
         start_fpath = os.path.join(vpnroot, "start.sh")
         config_fpath = os.path.join(vpnroot, "east.conf")
         subprocess.run([start_fpath, config_fpath])
