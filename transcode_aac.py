@@ -17,7 +17,7 @@ for fpath in args.input_files:
     name, _ = os.path.splitext(os.path.basename(fpath))
     output_fpath = os.path.join(args.output_dir, name + ".m4a")
     cmd = [
-        "/home/cw/bin/ffmpeg",
+        "ffmpeg",
         "-i", fpath,
         "-vn",  # no video
         # "-ac", "2",  # num of audio channels
