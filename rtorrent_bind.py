@@ -51,15 +51,16 @@ def main():
         vpn_already_on = True
 
     except:
-        if args.delay:
-            print("about", args.delay, "left")
-            subprocess.run(["sleep", args.delay])
-
         start_fpath = os.path.join(vpnroot, "start.sh")
         config_fpath = os.path.join(vpnroot, "east.conf")
         subprocess.run([start_fpath, config_fpath])
 
         vpn_ip = wait_ip_address(vpn_iface_name)
+
+    if args.delay:
+        print("Wait before launching rtorrent")
+        print("sleep", args.delay)
+        subprocess.run(["sleep", args.delay])
 
     subprocess.run(["rtorrent", "-b", vpn_ip])
 
