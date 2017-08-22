@@ -2,7 +2,7 @@
 
 set -e
 
-SWSETUP_ROOT="$HOME/Downloads/software_setup"
+SWSETUP_ROOT="$HOME/Downloads/sw_setup"
 FF_ROOT="$SWSETUP_ROOT/ff"
 FF_BUILD="$FF_ROOT/ffmpeg_build"
 FF_SOURCES="$FF_ROOT/ffmpeg_sources"
@@ -10,7 +10,7 @@ BIN_BACKUP="$HOME/bin/ffbak"
 
 # Backup old version
 mkdir -p $BIN_BACKUP
-for f in ~/bin/{ffmpeg,ffprobe,ffserver}
+for f in ~/bin/{ffmpeg,ffplay,ffprobe,ffserver}
 do
     if [ -f $f ]; then
         mv $f $BIN_BACKUP
@@ -27,27 +27,25 @@ sudo apt -y install --only-upgrade autoconf automake build-essential \
 
 # H.265/HEVC video encoder
 cd "$FF_SOURCES/x265"
-hg pull -u  # maybe we need not be in the repo's root to pull everything
+hg pull -u
 cd "$FF_SOURCES/x265/build/linux"
 PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$FF_BUILD" -DENABLE_SHARED:bool=off ../../source
-make -j4
+make -j8
 make install
-#make distclean || echo "Skipping distclean for x265..."
 
 # AAC audio encoder
 cd "$FF_SOURCES/fdk-aac"
 git pull
 autoreconf -fiv
 ./configure --prefix="$FF_BUILD" --disable-shared
-make -j4
+make -j8
 make install
-#make distclean
 
 # VP8/VP9 video encoder and decoder
 cd "$FF_SOURCES/libvpx"
 git pull
-PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
-PATH="$HOME/bin:$PATH" make -j4
+PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --enable-pic --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
+PATH="$HOME/bin:$PATH" make -j8
 make install
 
 # FFmpeg
@@ -72,9 +70,8 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$FF_BUILD/lib/pkgconfig" ./configure \
   --enable-libx265 \
   --enable-nonfree \
   --enable-static
-PATH="$HOME/bin:$PATH" make -j4
+PATH="$HOME/bin:$PATH" make -j8
 make install
-#make distclean
 hash -r
 
 # Delete unneeded backups
