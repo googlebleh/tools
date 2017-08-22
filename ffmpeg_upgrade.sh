@@ -2,7 +2,7 @@
 
 set -e
 
-SWSETUP_ROOT="$HOME/Downloads/sw_setup"
+SWSETUP_ROOT=
 FF_ROOT="$SWSETUP_ROOT/ff"
 FF_BUILD="$FF_ROOT/ffmpeg_build"
 FF_SOURCES="$FF_ROOT/ffmpeg_sources"
@@ -30,7 +30,7 @@ cd "$FF_SOURCES/x265"
 hg pull -u
 cd "$FF_SOURCES/x265/build/linux"
 PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$FF_BUILD" -DENABLE_SHARED:bool=off ../../source
-make -j8
+make
 make install
 
 # AAC audio encoder
@@ -38,14 +38,14 @@ cd "$FF_SOURCES/fdk-aac"
 git pull
 autoreconf -fiv
 ./configure --prefix="$FF_BUILD" --disable-shared
-make -j8
+make
 make install
 
 # VP8/VP9 video encoder and decoder
 cd "$FF_SOURCES/libvpx"
 git pull
 PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --enable-pic --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
-PATH="$HOME/bin:$PATH" make -j8
+PATH="$HOME/bin:$PATH" make
 make install
 
 # FFmpeg
@@ -70,7 +70,7 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$FF_BUILD/lib/pkgconfig" ./configure \
   --enable-libx265 \
   --enable-nonfree \
   --enable-static
-PATH="$HOME/bin:$PATH" make -j8
+PATH="$HOME/bin:$PATH" make
 make install
 hash -r
 
