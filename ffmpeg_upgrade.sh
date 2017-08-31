@@ -43,7 +43,7 @@ make install
 
 # VP8/VP9 video encoder and decoder
 cd "$FF_SOURCES/libvpx"
-git pull
+# git pull
 PATH="$HOME/bin:$PATH" ./configure --prefix="$FF_BUILD" --enable-pic --disable-examples --disable-unit-tests --enable-vp9-highbitdepth
 PATH="$HOME/bin:$PATH" make
 make install
