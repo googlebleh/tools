@@ -3,13 +3,12 @@
 import os
 import time
 import subprocess
+from argparse import ArgumentParser
 
 # for getting ip address
 import socket
 import fcntl
 import struct
-
-from argparse import ArgumentParser
 
 
 def get_ip_address(ifname):
@@ -28,13 +27,15 @@ def wait_ip_address(ifname):
     while ((time.time() - start) < 10):
         try:
             return get_ip_address(ifname)
+
         except IOError:
             time.sleep(wait_delay)  # wait for the interface to rise
+
     return None
 
 
 def process_args():
-    ap = ArgumentParser()
+    ap = ArgumentParser("Launch rtorrent, restricting it to VPN tunnel")
     ap.add_argument("-d", "--delay", help="string to pass to sleep")
     return ap.parse_args()
 
