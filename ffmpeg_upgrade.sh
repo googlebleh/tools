@@ -36,7 +36,7 @@ make install
 # AAC audio encoder
 cd "$FF_SOURCES/fdk-aac"
 git pull
-autoreconf -fiv
+autoreconf -fi
 ./configure --prefix="$FF_BUILD" --disable-shared
 make
 make install
