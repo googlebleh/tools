@@ -2,7 +2,7 @@
 
 set -ex
 
-se_regex='s/.*\.[sS]0([[:digit:]])[eE]([[:digit:]]+)\..*/\1\2/'
+se_regex='s/.*\.[sS]([[:digit:]]+)[eE]([[:digit:]]+)\..*/\1\2/'
 box_dav_root="https://dav.box.com/dav/Mine"
 
 # box_dav_url="$box_dav_root/Backups/cwee/domo_arigato"
