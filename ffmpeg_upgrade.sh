@@ -2,6 +2,26 @@
 
 set -e
 
+FF_ROOT="$HOME/Downloads/sw_setup/ff"
+FF_BUILD="$FF_ROOT/build"
+FF_SOURCES="$FF_ROOT/sources"
+FF_INSTALL_PATH="$HOME/.local/bin"
+BIN_BACKUP="$FF_INSTALL_PATH/ffbak"
+
+# Backup old version
+mkdir -p $BIN_BACKUP
+for f in $FF_INSTALL_PATH/{ffmpeg,ffplay,ffprobe,ffserver}; do
+    if [ -f $f ]; then
+        mv $f $BIN_BACKUP
+    fi
+done
+echo "Backed up ff binaries to" $BIN_BACKUP
+
+# H.264 video encoder
+cd $FF_SOURCES
+
+exit
+
 SWSETUP_ROOT=
 FF_ROOT="$SWSETUP_ROOT/ff"
 FF_BUILD="$FF_ROOT/ffmpeg_build"
