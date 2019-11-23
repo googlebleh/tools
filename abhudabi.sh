@@ -10,7 +10,6 @@ box_dav_root="https://dav.box.com/dav/Mine/Backups"
 # recipient="2gbleh@gmail.com"
 
 box_dav_url="$box_dav_root/abhinans/tgt/1280_720"
-recipient="abhinand.sukumar@gmail.com"
 
 for fpath in "$@"; do
   fname=$(basename -- "$fpath")
