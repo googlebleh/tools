@@ -23,6 +23,15 @@ parallel_wrap ()
     parallel -j 1 --joblog hevc.joblog --resume-failed --bar "nice $1"
 }
 
+check_invalids ()
+{
+    local input_fpaths=$(list_input_subtree "${input_root_dpath}")
+    local parallel_cmd="ffprobe -loglevel error ${input_root_dpath}/{}"
+    parallel --halt now,fail=1 "${parallel_cmd}" ::: ${input_fpaths}
+}
+
+check_invalids
+
 # mirror directory tree structure
 find "${input_root_dpath}" -type d -printf "${output_root_dpath}/%P\0" |
     xargs -0 mkdir -p
