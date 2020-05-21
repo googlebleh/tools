@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+import argparse
+import hashlib
+import os
+import sys
+
+MAXPORT = 65536
+MINPORT = 1024
+
+
+def hashname(name):
+    """compute an even port number from a hash of the argument"""
+
+    m = hashlib.md5()
+    m.update(name.encode())
+    hash_bytes = m.digest()
+
+    # take only the last 32 bits => last 4 bytes
+    seed = int.from_bytes(hash_bytes[-4:], byteorder="big")
+    port = seed % (MAXPORT - MINPORT) + MINPORT
+    port &= 0xfffffffe
+
+    return port
+
+
+def getargs():
+    original_description = "\n".join([
+        "port-for-user.pl - Return a port number, p, for a given user, with a",
+        "low probability of collisions. The port p is always even, so that",
+        "users can use p and p+1 for testing with proxy and the Tiny web",
+        "server.",
+    ])
+    ap = argparse.ArgumentParser(description=original_description)
+    ap.add_argument("id", nargs="?", default=os.getenv("USER"),
+            help="string seed used to calculate port number")
+    return ap.parse_args()
+
+
+def main():
+    args = getargs()
+
+    port = hashname(args.id)
+
+    if sys.stdout.isatty():
+        print("{}: {}".format(args.id, port))
+
+    else:
+        print(port)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
