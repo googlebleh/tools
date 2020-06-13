@@ -3,23 +3,23 @@
 import time
 from titlecase import titlecase
 
-from tv_titles import episode_title_lookup
+from tv_titles import get_episode_title
 
 def unittest_eps_title_lu(show, season, eps, expected):
     print(' '*4, "{} S{:02}E{:02}:".format(titlecase(show), season, eps), end=' ')
-    retval = episode_title_lookup(show, season, eps)
+    retval = get_episode_title(show, season, eps)
     print(retval.encode('utf-8'))
     assert(retval == expected)
 
 def test_eps_title_lu():
-    print(' '*2, "Testing episode_title_lookup()...")
+    print(' '*2, "Testing get_episode_title()...")
     start = time.time()
 
     unittest_eps_title_lu("adventure time", 6, 13, "Thanks for the Crabapples, Giuseppe!")
     # unittest_eps_title_lu("adventure time", 5, 52, "Billy's Bucket List")
 
     print(' '*4, "The Legend of Korra S02E08:", end=' ')
-    r = episode_title_lookup("the legend of korra", "two", 8)
+    r = get_episode_title("the legend of korra", "two", 8)
     print(r)
     assert(r == "Beginnings, Part 2")
 

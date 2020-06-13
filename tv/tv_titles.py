@@ -37,7 +37,6 @@ class WikiShowLookup:
 
         self.epslist_soup = BeautifulSoup(self.get_epslist_page(), "html.parser")
 
-
     def episode_title(self, season, episode):
         header_attrs = {
             "class" : "mw-headline",
@@ -58,6 +57,6 @@ class WikiShowLookup:
         return m.group(1) if m else cell_text
 
 
-# try to episode_title_lookup(*m.groups()[:3])
-def episode_title_lookup(show_name, season_num, episode_num):
+# try to get_episode_title(*m.groups()[:3])
+def get_episode_title(show_name, season_num, episode_num):
     return WikiShowLookup(show_name).episode_title(season_num, episode_num)
