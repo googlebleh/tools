@@ -59,6 +59,19 @@ check_invalids ()
     parallel --bar --halt now,fail=1 "${parallel_cmd}" ::: ${input_fpaths}
 }
 
+prep_output ()
+{
+    # mirror directory tree structure
+    find "${input_root_dpath}" -type d -printf "${output_root_dpath}/%P\0" |
+        xargs -0 mkdir -p
+
+    # copy non-video files that won't be converted
+    find ${input_root_dpath} \
+        -type f ! -name "*.mp4" \
+        -printf "%p\0" -printf "${output_root_dpath}/%P\0" |
+        xargs -0 -n 2 cp
+}
+
 echo "Checking input files..."
 invalid_log=invalids.txt
 check_invalids | tee ${invalid_log}
@@ -69,9 +82,7 @@ else
     exit
 fi
 
-# mirror directory tree structure
-find "${input_root_dpath}" -type d -printf "${output_root_dpath}/%P\0" |
-    xargs -0 mkdir -p
+prep_output
 
 ffmpeg_cmd="ffmpeg -y -i ${input_root_dpath}/{} -c:v libx265 -c:a copy ${output_root_dpath}/{.}.mkv"
 list_input_subtree "${input_root_dpath}" | sort | parallel_wrap "${ffmpeg_cmd}"
