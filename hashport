@@ -5,7 +5,7 @@ import hashlib
 import os
 import sys
 
-MAXPORT = 65536
+MAXPORT = 32768
 MINPORT = 1024
 
 
