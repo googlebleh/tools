@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
+
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
 
 from bs4 import BeautifulSoup
-from titlecase import titlecase
 
 
 class WikiShowLookup:
@@ -12,7 +13,7 @@ class WikiShowLookup:
     wiki_article_url_base = "http://en.wikipedia.org/wiki/"
 
     def __init__(self, show_name, use_cache=True):
-        self.show_name = titlecase(show_name)
+        self.show_name = show_name.title()
         self.use_cache = use_cache
 
         escaped = urllib.parse.quote(self.show_name.replace(' ', '_'))
