@@ -1,12 +1,153 @@
 use std::process;
 use std::io;
 use std::io::BufRead;
+use std::thread;
+use std::time;
+
+
+fn pactl_sync()
+{
+    // Pipewire's pactl gets confused when running several commands in
+    // succession. Wait about this long for each command to take effect
+    // before issuing another.
+    thread::sleep(time::Duration::from_millis(1250));
+}
 
 
 fn set_profile(card_name: &str, profile: &str)
 {
     process::Command::new("pactl")
         .args(["set-card-profile", card_name, profile])
+        .spawn()
+        .unwrap();
+
+    pactl_sync();
+}
+
+
+fn set_default_sink()
+{
+    // make sure card is set as default sink
+    let child = process::Command::new("pactl")
+        .args(["list", "sinks"])
+        .stdout(process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    let reader = io::BufReader::new(child.stdout.unwrap());
+
+    let sink_re = regex::Regex::new(r"^Sink #\d+").unwrap();
+    let name_re_str = r"^\s+Name: (bluez_output\.94_DB_56_88_E9_8F\..+)";
+    let name_re = regex::Regex::new(name_re_str).unwrap();
+
+    let mut sink_name = String::new();
+
+    for line_r in reader.lines() {
+        let line = line_r.unwrap();
+
+        if sink_re.is_match(line.as_str()) {
+            sink_name = "".to_string();
+            continue
+        }
+
+        if let Some(c) = name_re.captures(line.as_str()) {
+            sink_name = c.get(1).unwrap().as_str().to_string();
+            println!("set sink name {}", sink_name);
+            break;
+        }
+
+    }
+
+    process::Command::new("pactl")
+        .args(["set-default-sink", &sink_name])
+        .spawn()
+        .unwrap();
+
+    pactl_sync();
+}
+
+
+fn set_default_source()
+{
+    // make sure card is set as default source
+    let child = process::Command::new("pactl")
+        .args(["list", "sources"])
+        .stdout(process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    let reader = io::BufReader::new(child.stdout.unwrap());
+
+    let source_re = regex::Regex::new(r"^Source #\d+").unwrap();
+    let name_re_str = r"^\s+Name: (bluez_input\.94_DB_56_88_E9_8F\..+)";
+    let name_re = regex::Regex::new(name_re_str).unwrap();
+
+    let mut source_name = String::new();
+
+    for line_r in reader.lines() {
+        let line = line_r.unwrap();
+
+        if source_re.is_match(line.as_str()) {
+            source_name = "".to_string();
+            continue
+        }
+
+        if let Some(c) = name_re.captures(line.as_str()) {
+            source_name = c.get(1).unwrap().as_str().to_string();
+            println!("set source name {}", source_name);
+            break;
+        }
+
+    }
+
+    process::Command::new("pactl")
+        .args(["set-default-source", &source_name])
+        .spawn()
+        .unwrap();
+
+    pactl_sync();
+}
+
+
+fn set_current_mic_vol(volume_percent: u8)
+{
+    let cmd = [
+        "set-source-volume",
+        "@DEFAULT_SOURCE@",
+        &format!("{}%", volume_percent),
+    ];
+    process::Command::new("pactl")
+        .args(cmd)
+        .spawn()
+        .unwrap();
+
+    pactl_sync();
+}
+
+
+fn notify_mic_on()
+{
+    let cmd = [
+        "--icon",
+        "/usr/share/icons/ePapirus/32x32/devices/audio-input-microphone.svg",
+        "WH-1000XM4 Toggle",
+        "Microphone/Headset Active",
+    ];
+    process::Command::new("notify-send")
+        .args(&cmd)
+        .spawn()
+        .unwrap();
+}
+
+
+fn notify_a2dp()
+{
+    let cmd = [
+        "--icon",
+        "/usr/share/icons/ePapirus/32x32/devices/audio-headphones.svg",
+        "WH-1000XM4 Toggle",
+        "A2DP Active",
+    ];
+    process::Command::new("notify-send")
+        .args(&cmd)
         .spawn()
         .unwrap();
 }
@@ -40,17 +181,25 @@ fn main()
         let line = line_r.unwrap();
 
         if name == target_name && active_profile != "" {
-            let target_profile;
             if active_profile.starts_with(audio_profile) {
-                target_profile = headset_profile;
+                set_profile(target_name, headset_profile);
+                set_default_sink();
+                set_default_source();
+                notify_mic_on();
+
+                // volume should be audible, but not too high to cause
+                // clipping
+                set_current_mic_vol(100);
+
             } else {
-                target_profile = audio_profile;
+                set_profile(target_name, audio_profile);
+                notify_a2dp();
+                set_default_sink();
             }
-            set_profile(target_name, target_profile);
             break;
         }
 
-        if let Some(_) = card_re.captures(line.as_str()) {
+        if card_re.is_match(line.as_str()) {
             name = String::new();
             active_profile = String::new();
             continue
