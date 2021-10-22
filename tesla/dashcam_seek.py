@@ -13,7 +13,7 @@ class Main:
         ap = ArgumentParser("View a dashcam capture.")
         ap.add_argument("-c", "--camera",
                         help="force which camera")
-        ap.add_argument("-i", "--input-dir", default=".")
+        ap.add_argument("input_dir", default=".")
         self.args = ap.parse_args()
 
         self.attention_span = 5  # seconds
@@ -54,7 +54,8 @@ class Main:
         self.vid_suffix = f"-{camera_name}.mp4"
 
         # find video containing event
-        vids = sorted(glob.glob("*" + self.vid_suffix))
+        glob_str = os.path.join(self.args.input_dir, "*" + self.vid_suffix)
+        vids = sorted(glob.glob(glob_str))
         index_to_play = len(vids) - 1
         for i in range(1, len(vids)):
             if self.get_vid_ts(vids[i]) >= event_ts:
