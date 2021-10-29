@@ -153,8 +153,15 @@ fn notify_a2dp()
 }
 
 
-fn main()
+fn main_()
 {
+
+// $ pactl list | grep -i name:.*dock
+//         Name: alsa_output.usb-HP_HP_Dock_Audio_FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF-00.analog-stereo
+//         Name: alsa_output.usb-HP_HP_Dock_Audio_FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF-00.analog-stereo.monitor
+//         Name: alsa_input.usb-HP_HP_Dock_Audio_FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF-00.analog-stereo
+//         Name: alsa_card.usb-HP_HP_Dock_Audio_FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF-00
+
     let target_name = "bluez_card.94_DB_56_88_E9_8F";
     let headset_profile = "headset-head-unit";
     let audio_profile = "a2dp-sink";
@@ -212,4 +219,61 @@ fn main()
         }
 
     }
+}
+
+#[derive(Default)]
+struct Sink
+{
+    name: String,
+    description: String,
+}
+
+
+fn pactl_list_sinks() -> Vec<Sink>
+{
+    let mut v = Vec::new();
+
+    let child = process::Command::new("pactl")
+        .args(["list", "sinks"])
+        .stdout(process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    let reader = io::BufReader::new(child.stdout.unwrap());
+
+    let sink_re = regex::Regex::new(r"^Sink #(\d+)").unwrap();
+    let name_re = regex::Regex::new(r"^\s+Name: (.+)").unwrap();
+    let description_re = regex::Regex::new(r"^\s+Description: (.+)").unwrap();
+
+    let mut sink = Sink::default();
+
+    for line_r in reader.lines() {
+        let line = line_r.unwrap(); // bind data so we can refer to it later
+        let line_str = line.as_str();
+
+        if sink_re.is_match(line_str) {
+            v.push(sink);
+            sink = Sink::default();
+            continue
+        }
+
+        if let Some(c) = name_re.captures(line_str) {
+            sink.name = c.get(1).unwrap().as_str().to_string();
+        } else if let Some(c) = description_re.captures(line_str) {
+            sink.description = c.get(1).unwrap().as_str().to_string();
+        }
+
+    }
+
+    return v;
+}
+
+
+fn main()
+{
+    let sinks = pactl_list_sinks();
+
+    for sink in &sinks {
+        println!("{}", sink.name);
+    }
+
 }
