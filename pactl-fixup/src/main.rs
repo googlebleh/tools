@@ -3,6 +3,9 @@ use std::io;
 use std::io::BufRead;
 use std::thread;
 use std::time;
+use std::collections::HashSet;
+
+use regex::Regex;
 
 
 fn pactl_sync()
@@ -221,7 +224,7 @@ fn main_()
     }
 }
 
-#[derive(Default)]
+#[derive(PartialEq, Eq, Hash, Default)]
 struct Sink
 {
     name: String,
@@ -233,7 +236,7 @@ fn pactl_list_sinks() -> Vec<Sink>
 {
     let mut v = Vec::new();
 
-    let child = process::Command::new("pactl")
+    let child = process::Command::new("./pactl")
         .args(["list", "sinks"])
         .stdout(process::Stdio::piped())
         .spawn()
@@ -245,7 +248,6 @@ fn pactl_list_sinks() -> Vec<Sink>
     let description_re = regex::Regex::new(r"^\s+Description: (.+)").unwrap();
 
     let mut sink = Sink::default();
-
     for line_r in reader.lines() {
         let line = line_r.unwrap(); // bind data so we can refer to it later
         let line_str = line.as_str();
@@ -261,10 +263,58 @@ fn pactl_list_sinks() -> Vec<Sink>
         } else if let Some(c) = description_re.captures(line_str) {
             sink.description = c.get(1).unwrap().as_str().to_string();
         }
-
     }
 
     return v;
+}
+
+
+fn one_bt_connected(sinks: HashSet<Sink>) -> bool
+{
+    let mut docked_sinks = HashSet::new();
+    docked_sinks.insert(
+        Sink {
+            name: "alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_5__sink".to_string(),
+            description: "Comet Lake PCH cAVS HDMI / DisplayPort 3 Output".to_string(),
+        }
+    );
+    docked_sinks.insert(
+        Sink {
+            name: "alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_4__sink".to_string(),
+            description: "Comet Lake PCH cAVS HDMI / DisplayPort 2 Output".to_string(),
+        }
+    );
+    docked_sinks.insert(
+        Sink {
+            name: "alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_3__sink".to_string(),
+            description: "Comet Lake PCH cAVS HDMI / DisplayPort 1 Output".to_string(),
+        }
+    );
+    docked_sinks.insert(
+        Sink {
+            name: "alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink".to_string(),
+            description: "Comet Lake PCH cAVS Speaker + Headphones".to_string(),
+        }
+    );
+    docked_sinks.insert(
+        Sink {
+            name: "alsa_output.usb-HP_HP_Dock_Audio_FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF-00.analog-stereo".to_string(),
+            description: "HP Dock Audio Analog Stereo".to_string(),
+        }
+    );
+
+    let mut plugged_sinks: std::collections::hash_set::Difference<Sink, std::collections::hash_map::RandomState > = sinks.difference(&docked_sinks);
+
+    // if plugged_sinks.len() != 1 {
+    //     return false;
+    // }
+
+    let bt_sink_re = Regex::new(r"bluez_output\..+\.a2dp-sink").unwrap();
+    if let Some(sink) = plugged_sinks.next() {
+        return bt_sink_re.is_match(&sink.name);
+    }
+
+    return false;
 }
 
 
@@ -272,8 +322,22 @@ fn main()
 {
     let sinks = pactl_list_sinks();
 
-    for sink in &sinks {
-        println!("{}", sink.name);
+    let displayout_re = regex::Regex::new(r"Comet Lake PCH cAVS HDMI / DisplayPort \d+ Output").unwrap();
+
+    let sink_set = sinks.into_iter().collect();
+    if one_bt_connected(sink_set) {
+        println!("success");
+    } else {
+        println!("not success");
     }
+
+    // for sink in &sinks {
+    //     if displayout_re.is_match(&sink.description) {
+    //         continue
+    //     }
+    //     println!("{}", sink.name);
+    //     println!("{}", sink.description);
+    //     println!("");
+    // }
 
 }
