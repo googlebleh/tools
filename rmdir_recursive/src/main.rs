@@ -1,3 +1,10 @@
+// TODO: fix indenting
+// TODO: improve logging
+// TODO: dry-run mode
+// TODO: re-structure to avoid many nested indents
+
+/// Bard: "rust equivalent of multiplying a string by an integer in
+/// python"
 fn multiply_string_by_integer(string: &str, integer: i32) -> String
 {
     let mut new_string = String::new();
