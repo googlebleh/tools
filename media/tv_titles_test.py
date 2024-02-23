@@ -37,7 +37,7 @@ def test_eps_title_lu():
     unittest_eps_title_lu("the big bang theory", 4, 8, "The 21-Second Excitation")
     # unittest_eps_title_lu("the big bang theory", 2, 6, "The Cooper-Nowitzki Theorem")
     unittest_eps_title_lu("the big bang theory", 2, 6, "The Cooper–Nowitzki Theorem")
-    unittest_eps_title_lu("archer", 5, 13, "Arrival/Departure")
+    unittest_eps_title_lu("archer", 5, 13, "Arrivals/Departures")
     unittest_eps_title_lu("archer", 3, 13, "Space Race: Part II")
     unittest_eps_title_lu("silicon valley", 1, 7, "Proof of Concept")
     unittest_eps_title_lu("archer", 3, 3, "Heart of Archness: Part III")
