@@ -1,0 +1,15 @@
+[package]
+name = "autodetect_settings-zbook"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+
+[dependencies]
+edid-rs = "0.1"
+gtk-sys = "0.15"
+xrandr = "0.1"
+winit = "0.28"
