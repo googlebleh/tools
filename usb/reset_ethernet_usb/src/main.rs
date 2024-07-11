@@ -1,7 +1,6 @@
 fn main() -> anyhow::Result<()>
 {
     let dmesg = std::process::Command::new("dmesg")
-        .args(["--since", "10 min ago"])
         .output()?;
 
     let pci_re = regex_lite::Regex::new(concat!(
