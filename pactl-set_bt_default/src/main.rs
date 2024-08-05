@@ -24,7 +24,7 @@ fn notify_mic_on()
 {
     std::process::Command::new("notify-send")
         .args([
-            "--icon", "/usr/share/icons/ePapirus/32x32/devices/audio-input-microphone.svg",
+            "--icon", "/usr/share/icons/Papirus/32x32/devices/audio-input-microphone.svg",
             "Bluetooth Toggle",
             "Microphone/Headset Active",
         ])
@@ -37,7 +37,7 @@ fn notify_a2dp()
 {
     std::process::Command::new("notify-send")
         .args([
-            "--icon", "/usr/share/icons/ePapirus/32x32/devices/audio-headphones.svg",
+            "--icon", "/usr/share/icons/Papirus/32x32/devices/audio-headphones.svg",
             "Bluetooth Toggle",
             "A2DP Active",
         ])
