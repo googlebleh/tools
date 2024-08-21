@@ -113,7 +113,7 @@ fn main()
     let target_names = vec!(
         "bluez_card.94_DB_56_88_E9_8F", // WF-1000XM4 headphones
         "bluez_card.88_C9_E8_2E_85_B4", // WF-1000XM4 earbuds
-        "bluez_card.AC_80_0A_C3_F7_9C", // WF-1000XM5 earbuds
+        "bluez_card.AC_80_0A_4C_6C_48", // WF-1000XM5 earbuds
     );
     let headset_profile = "headset-head-unit";
     let audio_profile = "a2dp-sink";
