@@ -1,0 +1,6 @@
+services:
+  guest:
+    build:
+      context: .
+      args:
+        uname: "$USER"
