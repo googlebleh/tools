@@ -1,0 +1,11 @@
+[Unit]
+Description=Notify the sysadmin about a failed unit
+Requires=network.target
+After=network.target
+
+[Service]
+ExecStart=notifyfail %i
+DevicePolicy=closed
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
