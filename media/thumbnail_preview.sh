@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Check if video path is provided
 if [ -z "$1" ]; then
@@ -8,9 +9,9 @@ fi
 
 # Assign the input video file path and output folder
 fpath="$1"
-fname=$(basename "$fpath")
-output_dir="/tmp/screens"
+output_dir="$2"
 
+fname=$(basename "$fpath")
 output_file="${output_dir}/${fname%.*}.png"
 
 # Ensure the output directory exists
@@ -29,6 +30,9 @@ fi
 fps=$(echo "scale=6; 20 / $duration" | bc)
 
 # Run ffmpeg to extract and tile the frames
-ffmpeg -y -loglevel error -i "$fpath" \
+ffmpeg \
+  -loglevel error \
+  -hwaccel cuda \
+  -i "$fpath" \
   -vf "fps=$fps,scale=320:-1,tile=5x4:padding=2:color=white" \
   -frames:v 1 "$output_file"
