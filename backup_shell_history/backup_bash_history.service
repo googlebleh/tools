@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup ~/.bash_history
+
+[Service]
+Type=simple
+ExecStart=commit_bash_history %h/.bash_history_history
