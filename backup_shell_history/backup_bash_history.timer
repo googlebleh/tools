@@ -1,0 +1,10 @@
+[Unit]
+Description=Trigger backing up ~/.bash_history
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+Unit=backup_bash_history.service
+
+[Install]
+WantedBy=timers.target
