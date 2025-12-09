@@ -61,11 +61,8 @@ class Main:
             if self.get_vid_ts(vids[i]) >= event_ts:
                 index_to_play = i - 1
 
-        # play video containing event first
-        event_vid = vids.pop(index_to_play)
-        vids.insert(0, event_vid)
-
         # seek to just before event
+        event_vid = vids[index_to_play]
         event_vid_ts = self.get_vid_ts(event_vid)
         event_offset = event_ts - event_vid_ts
         start_time = event_offset.total_seconds() - self.attention_span
@@ -74,7 +71,7 @@ class Main:
         print("\twith event at", event_offset)
         print()
 
-        cmd = ["vlc", f"--start-time={start_time}"] + vids
+        cmd = ["mpv", f"--start={start_time}", f"--playlist-start={index_to_play}"] + vids
         subprocess.run(cmd)
 
 
