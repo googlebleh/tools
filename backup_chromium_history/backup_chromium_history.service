@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup Chromium History DBs (per profile)
+
+[Service]
+Type=simple
+ExecStart=backup_chromium_history

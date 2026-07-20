@@ -1,0 +1,12 @@
+[Unit]
+Description=Trigger backing up Chromium History DBs (~90-day browser retention)
+
+[Timer]
+# Chromium expires visits after 90 days; quarterly is about the same cadence.
+# Gaps must stay <= 90 days for continuous coverage across snapshots.
+OnCalendar=quarterly
+Persistent=true
+Unit=backup_chromium_history.service
+
+[Install]
+WantedBy=timers.target
